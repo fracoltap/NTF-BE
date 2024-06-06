@@ -10,16 +10,16 @@ namespace NTF_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class FarmController : ControllerBase
     {
 
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IFarmRepository _farmRepository;
 
-        public UserController(IMapper mapper, IUserRepository userRepository)
+        public FarmController(IMapper mapper, IFarmRepository farmRepository)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _farmRepository = farmRepository;
         }
 
         [HttpGet]
@@ -27,11 +27,11 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var listUsers = await _userRepository.GetListUsers();
+                var listFarms = await _farmRepository.GetListFarms();
 
-                var listUsersDto = _mapper.Map<IEnumerable<UserDTO>>(listUsers);
+                var listFarmsDto = _mapper.Map<IEnumerable<FarmDTO>>(listFarms);
 
-                return Ok(listUsersDto);
+                return Ok(listFarmsDto);
             }
             catch (Exception ex)
             {
@@ -43,19 +43,19 @@ namespace NTF_BE.Controllers
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
-            {
+        {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var farm = await _farmRepository.GetFarm(id);
 
-                if (user == null)
+                if (farm == null)
                 {
                     return NotFound();
                 }
 
-                var userDto = _mapper.Map<UserDTO>(user);
+                var farmDto = _mapper.Map<FarmDTO>(farm);
 
-                return Ok(userDto);
+                return Ok(farmDto);
 
             }
             catch (Exception ex)
@@ -70,14 +70,14 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var farm = await _farmRepository.GetFarm(id);
 
-                if (user == null)
+                if (farm == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.DeleteUser(user);
+                await _farmRepository.DeleteFarm(farm);
 
                 return NoContent();
             }
@@ -88,19 +88,19 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(UserDTO userDto)
+        public async Task<IActionResult> Post(FarmDTO farmDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var farm = _mapper.Map<Farm>(farmDto);
 
-                user.CreatedDate = DateTime.Now;
+                farm.CreatedDate = DateTime.Now;
 
-                user = await _userRepository.AddUser(user);
+                farm = await _farmRepository.AddFarm(farm);
 
-                var userItemDto = _mapper.Map<UserDTO>(user);
+                var farmItemDto = _mapper.Map<FarmDTO>(farm);
 
-                return CreatedAtAction("Get", new { id = userItemDto.Id }, userItemDto);
+                return CreatedAtAction("Get", new { id = farmItemDto.Id }, farmItemDto);
 
             }
             catch (Exception ex)
@@ -110,25 +110,25 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, UserDTO userDto)
+        public async Task<IActionResult> Put(int id, FarmDTO farmDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var farm = _mapper.Map<Farm>(farmDto);
 
-                if (id != user.Id)
+                if (id != farm.Id)
                 {
                     return BadRequest();
                 }
 
-                var userItem = await _userRepository.GetUser(id);
+                var farmItem = await _farmRepository.GetFarm(id);
 
-                if (userItem == null)
+                if (farmItem == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.UpdateUser(user);
+                await _farmRepository.UpdateFarm(farm);
 
                 return NoContent();
 

@@ -10,16 +10,16 @@ namespace NTF_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class InventoryController : ControllerBase
     {
 
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IInventoryRepository _inventoryRepository;
 
-        public UserController(IMapper mapper, IUserRepository userRepository)
+        public InventoryController(IMapper mapper, IInventoryRepository inventoryRepository)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _inventoryRepository = inventoryRepository;
         }
 
         [HttpGet]
@@ -27,11 +27,11 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var listUsers = await _userRepository.GetListUsers();
+                var listInventory = await _inventoryRepository.GetListInventory();
 
-                var listUsersDto = _mapper.Map<IEnumerable<UserDTO>>(listUsers);
+                var listInventoryDto = _mapper.Map<IEnumerable<InventoryDTO>>(listInventory);
 
-                return Ok(listUsersDto);
+                return Ok(listInventoryDto);
             }
             catch (Exception ex)
             {
@@ -43,19 +43,19 @@ namespace NTF_BE.Controllers
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
-            {
+        {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var inventory = await _inventoryRepository.GetInventory(id);
 
-                if (user == null)
+                if (inventory == null)
                 {
                     return NotFound();
                 }
 
-                var userDto = _mapper.Map<UserDTO>(user);
+                var inventoryDto = _mapper.Map<InventoryDTO>(inventory);
 
-                return Ok(userDto);
+                return Ok(inventoryDto);
 
             }
             catch (Exception ex)
@@ -70,14 +70,14 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var inventory = await _inventoryRepository.GetInventory(id);
 
-                if (user == null)
+                if (inventory == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.DeleteUser(user);
+                await _inventoryRepository.DeleteInventory(inventory);
 
                 return NoContent();
             }
@@ -88,19 +88,19 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(UserDTO userDto)
+        public async Task<IActionResult> Post(InventoryDTO inventoryDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var inventory = _mapper.Map<Inventory>(inventoryDto);
 
-                user.CreatedDate = DateTime.Now;
+                inventory.CreatedDate = DateTime.Now;
 
-                user = await _userRepository.AddUser(user);
+                inventory = await _inventoryRepository.AddInventory(inventory);
 
-                var userItemDto = _mapper.Map<UserDTO>(user);
+                var inventoryItemDto = _mapper.Map<InventoryDTO>(inventory);
 
-                return CreatedAtAction("Get", new { id = userItemDto.Id }, userItemDto);
+                return CreatedAtAction("Get", new { id = inventoryItemDto.Id }, inventoryItemDto);
 
             }
             catch (Exception ex)
@@ -110,25 +110,25 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, UserDTO userDto)
+        public async Task<IActionResult> Put(int id, InventoryDTO inventoryDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var inventory = _mapper.Map<Inventory>(inventoryDto);
 
-                if (id != user.Id)
+                if (id != inventory.Id)
                 {
                     return BadRequest();
                 }
 
-                var userItem = await _userRepository.GetUser(id);
+                var inventoryItem = await _inventoryRepository.GetInventory(id);
 
-                if (userItem == null)
+                if (inventoryItem == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.UpdateUser(user);
+                await _inventoryRepository.UpdateInventory(inventory);
 
                 return NoContent();
 

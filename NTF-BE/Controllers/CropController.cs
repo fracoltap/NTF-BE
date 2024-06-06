@@ -10,16 +10,16 @@ namespace NTF_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class CropController : ControllerBase
     {
 
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly ICropRepository _cropRepository;
 
-        public UserController(IMapper mapper, IUserRepository userRepository)
+        public CropController(IMapper mapper, ICropRepository cropRepository)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _cropRepository = cropRepository;
         }
 
         [HttpGet]
@@ -27,11 +27,11 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var listUsers = await _userRepository.GetListUsers();
+                var listCrops = await _cropRepository.GetListCrops();
 
-                var listUsersDto = _mapper.Map<IEnumerable<UserDTO>>(listUsers);
+                var listCropsDto = _mapper.Map<IEnumerable<CropDTO>>(listCrops);
 
-                return Ok(listUsersDto);
+                return Ok(listCropsDto);
             }
             catch (Exception ex)
             {
@@ -43,19 +43,19 @@ namespace NTF_BE.Controllers
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
-            {
+        {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var crop = await _cropRepository.GetCrop(id);
 
-                if (user == null)
+                if (crop == null)
                 {
                     return NotFound();
                 }
 
-                var userDto = _mapper.Map<UserDTO>(user);
+                var cropDto = _mapper.Map<CropDTO>(crop);
 
-                return Ok(userDto);
+                return Ok(cropDto);
 
             }
             catch (Exception ex)
@@ -70,14 +70,14 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var crop = await _cropRepository.GetCrop(id);
 
-                if (user == null)
+                if (crop == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.DeleteUser(user);
+                await _cropRepository.DeleteCrop(crop);
 
                 return NoContent();
             }
@@ -88,19 +88,19 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(UserDTO userDto)
+        public async Task<IActionResult> Post(CropDTO cropDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var crop = _mapper.Map<Crop>(cropDto);
 
-                user.CreatedDate = DateTime.Now;
+                crop.CreatedDate = DateTime.Now;
 
-                user = await _userRepository.AddUser(user);
+                crop = await _cropRepository.AddCrop(crop);
 
-                var userItemDto = _mapper.Map<UserDTO>(user);
+                var cropItemDto = _mapper.Map<CropDTO>(crop);
 
-                return CreatedAtAction("Get", new { id = userItemDto.Id }, userItemDto);
+                return CreatedAtAction("Get", new { id = cropItemDto.Id }, cropItemDto);
 
             }
             catch (Exception ex)
@@ -110,25 +110,25 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, UserDTO userDto)
+        public async Task<IActionResult> Put(int id, CropDTO cropDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var crop = _mapper.Map<Crop>(cropDto);
 
-                if (id != user.Id)
+                if (id != crop.Id)
                 {
                     return BadRequest();
                 }
 
-                var userItem = await _userRepository.GetUser(id);
+                var cropItem = await _cropRepository.GetCrop(id);
 
-                if (userItem == null)
+                if (cropItem == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.UpdateUser(user);
+                await _cropRepository.UpdateCrop(crop);
 
                 return NoContent();
 

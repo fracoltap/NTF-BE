@@ -10,16 +10,16 @@ namespace NTF_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class ActivityController : ControllerBase
     {
 
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IActivityRepository _activityRepository;
 
-        public UserController(IMapper mapper, IUserRepository userRepository)
+        public ActivityController(IMapper mapper, IActivityRepository activityRepository)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _activityRepository = activityRepository;
         }
 
         [HttpGet]
@@ -27,11 +27,11 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var listUsers = await _userRepository.GetListUsers();
+                var listActivities = await _activityRepository.GetListActivities();
 
-                var listUsersDto = _mapper.Map<IEnumerable<UserDTO>>(listUsers);
+                var listActivitiesDto = _mapper.Map<IEnumerable<ActivityDTO>>(listActivities);
 
-                return Ok(listUsersDto);
+                return Ok(listActivitiesDto);
             }
             catch (Exception ex)
             {
@@ -43,19 +43,19 @@ namespace NTF_BE.Controllers
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
-            {
+        {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var activity = await _activityRepository.GetActivity(id);
 
-                if (user == null)
+                if (activity == null)
                 {
                     return NotFound();
                 }
 
-                var userDto = _mapper.Map<UserDTO>(user);
+                var activityDto = _mapper.Map<ActivityDTO>(activity);
 
-                return Ok(userDto);
+                return Ok(activityDto);
 
             }
             catch (Exception ex)
@@ -70,14 +70,14 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var activity = await _activityRepository.GetActivity(id);
 
-                if (user == null)
+                if (activity == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.DeleteUser(user);
+                await _activityRepository.DeleteActivity(activity);
 
                 return NoContent();
             }
@@ -88,19 +88,19 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(UserDTO userDto)
+        public async Task<IActionResult> Post(ActivityDTO activityDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var activity = _mapper.Map<Activity>(activityDto);
 
-                user.CreatedDate = DateTime.Now;
+                activity.CreatedDate = DateTime.Now;
 
-                user = await _userRepository.AddUser(user);
+                activity = await _activityRepository.AddActivity(activity);
 
-                var userItemDto = _mapper.Map<UserDTO>(user);
+                var activityItemDto = _mapper.Map<ActivityDTO>(activity);
 
-                return CreatedAtAction("Get", new { id = userItemDto.Id }, userItemDto);
+                return CreatedAtAction("Get", new { id = activityItemDto.Id }, activityItemDto);
 
             }
             catch (Exception ex)
@@ -110,25 +110,25 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, UserDTO userDto)
+        public async Task<IActionResult> Put(int id, ActivityDTO activityDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var activity = _mapper.Map<Activity>(activityDto);
 
-                if (id != user.Id)
+                if (id != activity.Id)
                 {
                     return BadRequest();
                 }
 
-                var userItem = await _userRepository.GetUser(id);
+                var activityItem = await _activityRepository.GetActivity(id);
 
-                if (userItem == null)
+                if (activityItem == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.UpdateUser(user);
+                await _activityRepository.UpdateActivity(activity);
 
                 return NoContent();
 

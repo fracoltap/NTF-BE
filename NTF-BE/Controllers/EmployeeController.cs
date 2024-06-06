@@ -10,16 +10,16 @@ namespace NTF_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class EmployeeController : ControllerBase
     {
 
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public UserController(IMapper mapper, IUserRepository userRepository)
+        public EmployeeController(IMapper mapper, IEmployeeRepository employeeRepository)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _employeeRepository = employeeRepository;
         }
 
         [HttpGet]
@@ -27,11 +27,11 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var listUsers = await _userRepository.GetListUsers();
+                var listEmployees = await _employeeRepository.GetListEmployees();
 
-                var listUsersDto = _mapper.Map<IEnumerable<UserDTO>>(listUsers);
+                var listEmployeesDto = _mapper.Map<IEnumerable<EmployeeDTO>>(listEmployees);
 
-                return Ok(listUsersDto);
+                return Ok(listEmployeesDto);
             }
             catch (Exception ex)
             {
@@ -43,19 +43,19 @@ namespace NTF_BE.Controllers
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
-            {
+        {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var employee = await _employeeRepository.GetEmployee(id);
 
-                if (user == null)
+                if (employee == null)
                 {
                     return NotFound();
                 }
 
-                var userDto = _mapper.Map<UserDTO>(user);
+                var employeeDto = _mapper.Map<EmployeeDTO>(employee);
 
-                return Ok(userDto);
+                return Ok(employeeDto);
 
             }
             catch (Exception ex)
@@ -70,14 +70,14 @@ namespace NTF_BE.Controllers
         {
             try
             {
-                var user = await _userRepository.GetUser(id);
+                var employee = await _employeeRepository.GetEmployee(id);
 
-                if (user == null)
+                if (employee == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.DeleteUser(user);
+                await _employeeRepository.DeleteEmployee(employee);
 
                 return NoContent();
             }
@@ -88,19 +88,19 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(UserDTO userDto)
+        public async Task<IActionResult> Post(EmployeeDTO employeeDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var employee = _mapper.Map<Employee>(employeeDto);
 
-                user.CreatedDate = DateTime.Now;
+                employee.CreatedDate = DateTime.Now;
 
-                user = await _userRepository.AddUser(user);
+                employee = await _employeeRepository.AddEmployee(employee);
 
-                var userItemDto = _mapper.Map<UserDTO>(user);
+                var employeeItemDto = _mapper.Map<EmployeeDTO>(employee);
 
-                return CreatedAtAction("Get", new { id = userItemDto.Id }, userItemDto);
+                return CreatedAtAction("Get", new { id = employeeItemDto.Id }, employeeItemDto);
 
             }
             catch (Exception ex)
@@ -110,25 +110,25 @@ namespace NTF_BE.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, UserDTO userDto)
+        public async Task<IActionResult> Put(int id, EmployeeDTO employeeDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
+                var employee = _mapper.Map<Employee>(employeeDto);
 
-                if (id != user.Id)
+                if (id != employee.Id)
                 {
                     return BadRequest();
                 }
 
-                var userItem = await _userRepository.GetUser(id);
+                var employeeItem = await _employeeRepository.GetEmployee(id);
 
-                if (userItem == null)
+                if (employeeItem == null)
                 {
                     return NotFound();
                 }
 
-                await _userRepository.UpdateUser(user);
+                await _employeeRepository.UpdateEmployee(employee);
 
                 return NoContent();
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using static NTF_BE.Models.Repository.UserRepository;
 
 namespace NTF_BE.Models.Repository
 {
